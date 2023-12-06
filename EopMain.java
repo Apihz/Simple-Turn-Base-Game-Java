@@ -13,7 +13,7 @@ public class EopMain {
         //getAttackName
         //displayWinner
         //displayStatus
-        //displayAttackwowowow
+        //displayAttack
         //calculateDamage
         
         Scanner scanner = new Scanner(System.in);
