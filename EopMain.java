@@ -10,10 +10,10 @@ public class EopMain {
         //getPlayerName
         //getPlayerAttack
         //getPlayerAbility
-        //getAttackNametesto
+        //getAttackName
         //displayWinner
         //displayStatus
-        //displayAttack
+        //displayAttackwowowow
         //calculateDamage
         
         Scanner scanner = new Scanner(System.in);
