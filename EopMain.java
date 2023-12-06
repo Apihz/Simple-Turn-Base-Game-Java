@@ -26,6 +26,7 @@ public class EopMain {
             "Pikcachu", "Charizard", "Fanny", "Balmond", "Yuri"
         };
         playTurn(scanner, attacks, enemyName ); //call
+        scanner.close();
     }
 
     private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName) {
