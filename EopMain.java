@@ -1,41 +1,57 @@
-import java.util.Random; 
+import java.util.Random;  
 import java.util.Scanner;
 
 public class EopMain {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
+        //method:
+        //main
+        //playTurn
+        //getPlayerName
+        //getPlayerAttack
+        //getPlayerAbility
+        //getAttackNametesto
+        //displayWinner
+        //displayStatus
+        //displayAttack
+        //calculateDamage
+        
+        Scanner scanner = new Scanner(System.in);
         String[][] attacks = {
-                {"Punch", "4"},
-                {"Kick", "6"},
-                {"Smackdown", "7"}
+            {"Punch", "4"},
+            {"Kick", "6"},
+            {"Smackdown", "7"}
         };
-            playTurn(scanner, attacks);
+        String[] enemyName = {
+            "Pikcachu", "Charizard", "Fanny", "Balmond", "Yuri"
+        };
+        playTurn(scanner, attacks, enemyName ); //call
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks) {
-        
-        String playerName = getPlayerName(scanner);
+    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName) {
+        Random random = new Random();
+        String playerName = getPlayerName(scanner); //callj
         int playerHP = 100;
-       
-        String enemyName = "Pikachu";
+
+        int randomIndex = random.nextInt(enemyName.length);
+        System.out.println("Your enemy is " + enemyName[randomIndex]);
+
         int enemyHP = 100;
 
-        while (playerHP > 0 && enemyHP > 0){
-            
-            displayStatus(playerName, playerHP, enemyName, enemyHP); 
+        while (playerHP > 0 && enemyHP > 0) {
+
+            displayStatus(playerName, playerHP, enemyName, enemyHP, randomIndex); //call
             int playerPoisonCount = 0;
             boolean playerIsParalyzed = false;
             int enemyPoisonCount = 0;
             boolean enemyIsParalyzed = false;
 
-            int playerAttack = getPlayerAttack(scanner, attacks);
-            int playerDamage = calculateDamage(playerAttack);
-            int playerAbility = getPlayerAbility(scanner);
+            int playerAttack = getPlayerAttack(scanner, attacks); //call
+            int playerDamage = calculateDamage(playerAttack); //call
+            int playerAbility = getPlayerAbility(scanner);  //call
 
-            Random random = new Random();
             int enemyAttack = random.nextInt(attacks.length) + 1; // Random attack for the enemy
-            int enemyDamage = calculateDamage(enemyAttack);
+            int enemyDamage = calculateDamage(enemyAttack); //call
             int enemyAbility = random.nextInt(5) + 1; // Random ability for the enemy
 
             int playerMaxHP = 100;
@@ -49,15 +65,15 @@ public class EopMain {
                         break;
                     case 2:
                         enemyIsParalyzed = true;
-                        System.out.println(playerName + " used Paralyze! " + enemyName + " will be unable to attack next turn!");
+                        System.out.println(playerName + " used Paralyze! " + enemyName[randomIndex] + " will be unable to attack next turn!");
                         break;
                     case 3:
                         enemyPoisonCount = 4;
-                        System.out.println(playerName + " used Poison! " + enemyName + " will lose 5 HP for 4 turns!");
+                        System.out.println(playerName + " used Poison! " + enemyName[randomIndex] + " will lose 5 HP for 4 turns!");
                         break;
                     case 4:
                         enemyDamage = (int) (playerDamage * 0.7);
-                        System.out.println(playerName + " used Defense! " + enemyName + "'s attack power is weakened by 30%!");
+                        System.out.println(playerName + " used Defense! " + enemyName[randomIndex] + "'s attack power is weakened by 30%!");
                         break;
                     case 5:
                         if (playerHP < playerMaxHP) {
@@ -82,27 +98,26 @@ public class EopMain {
                     enemyPoisonCount--;
                 }
 
-            } 
-            else {
+            } else {
                 System.out.println(playerName + " is paralyzed and unable to attack!");
             }
             if (!enemyIsParalyzed) {
                 switch (enemyAbility) {
                     case 1:
                         enemyDamage = (int) (enemyDamage * 1.5);
-                        System.out.println(enemyName + " used Boost! Attack power increased by 50%!");
+                        System.out.println(enemyName[randomIndex] + " used Boost! Attack power increased by 50%!");
                         break;
                     case 2:
                         playerIsParalyzed = true;
-                        System.out.println(enemyName + " used Paralyze! " + playerName + " will be unable to attack next turn!");
+                        System.out.println(enemyName[randomIndex] + " used Paralyze! " + playerName + " will be unable to attack next turn!");
                         break;
                     case 3:
                         playerPoisonCount = 4;
-                        System.out.println(enemyName + " used Poison! " + playerName + " will lose 5 HP for 4 turns!");
+                        System.out.println(enemyName[randomIndex] + " used Poison! " + playerName + " will lose 5 HP for 4 turns!");
                         break;
                     case 4:
                         playerDamage = (int) (enemyDamage * 0.7);
-                        System.out.println(enemyName + " used Smokescreen! " + playerName + "'s attack power is weakened by 30%!");
+                        System.out.println(enemyName[randomIndex] + " used Smokescreen! " + playerName + "'s attack power is weakened by 30%!");
                         break;
                     case 5:
                         if (enemyHP < playerMaxHP) {
@@ -111,13 +126,13 @@ public class EopMain {
                             } else {
                                 enemyHP += healingAmount;
                             }
-                            System.out.println(enemyName + " used Heal! " + enemyName + " recovers " + healingAmount + " HP!");
+                            System.out.println(enemyName[randomIndex] + " used Heal! " + enemyName[randomIndex] + " recovers " + healingAmount + " HP!");
                         } else {
-                            System.out.println(enemyName + " is already at full health!");
+                            System.out.println(enemyName[randomIndex] + " is already at full health!");
                         }
                         break;
                     default:
-                        System.out.println(enemyName + " used an invalid ability!");
+                        System.out.println(enemyName[randomIndex] + " used an invalid ability!");
                 }
 
                 playerHP -= enemyDamage;
@@ -128,16 +143,16 @@ public class EopMain {
                 }
 
             } else {
-                System.out.println(enemyName + " is paralyzed and unable to attack!");
+                System.out.println(enemyName[randomIndex] + " is paralyzed and unable to attack!");
             }
 
-            displayAttack(playerName, enemyName, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed);
+            displayAttack(playerName, enemyName, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex); //call
 
             playerIsParalyzed = false;
             enemyIsParalyzed = false;
-            
+
         }
-        displayWinner(playerName, playerHP, enemyName, enemyHP);
+        displayWinner(playerName, playerHP, enemyName, randomIndex);
     }
 
     private static String getPlayerName(Scanner scanner) {
@@ -145,9 +160,9 @@ public class EopMain {
         return scanner.nextLine();
     }
 
-    private static void displayStatus(String playerName, int playerHP, String enemyName, int enemyHP) {
+    private static void displayStatus(String playerName, int playerHP, String[] enemyName, int enemyHP, int randomIndex) {
         System.out.println("\n" + playerName + " || HP: " + playerHP);
-        System.out.println(enemyName + " || HP: " + enemyHP);
+        System.out.println(enemyName[randomIndex] + " || HP: " + enemyHP);
     }
 
     private static int getPlayerAttack(Scanner scanner, String[][] attacks) {
@@ -204,26 +219,26 @@ public class EopMain {
         return ability;
     }
 
-    private static void displayAttack(String playerName, String enemyName, int playerAttack, int playerDamage, int enemyAttack, int enemyDamage, boolean playerIsParalyzed, boolean enemyIsParalyzed) {
+    private static void displayAttack(String playerName, String[] enemyName, int playerAttack, int playerDamage, int enemyAttack, int enemyDamage, boolean playerIsParalyzed, boolean enemyIsParalyzed, int randomIndex) {
         String playerAttackName = getAttackName(playerAttack);
         String enemyAttackName = getAttackName(enemyAttack);
-        if(!playerIsParalyzed){
-            System.out.println("|----------------------------------");
-            System.out.println("|" + playerName + " used " + playerAttackName + " and dealt " + playerDamage + " damage to " + enemyName);
+        if (!playerIsParalyzed) {
+            System.out.println("|--------------------------------------------|");
+            System.out.println("|" + playerName + " used " + playerAttackName + " and dealt " + playerDamage + " damage to " + enemyName[randomIndex] + "|");
         }
         if (!enemyIsParalyzed) {
-            System.out.println("|----------------------------------");
-            System.out.println("|" + enemyName + " used " + enemyAttackName + " and dealt " + enemyDamage + " damage to " + playerName);
+            System.out.println("|--------------------------------------------|");
+            System.out.println("|" + enemyName[randomIndex]+ " used " + enemyAttackName + " and dealt " + enemyDamage + " damage to " + playerName + "|");
         }
         if (playerIsParalyzed) {
-            System.out.println("|----------------------------------");
+            System.out.println("|--------------------------------------------|");
             System.out.println("|" + playerName + " is paralyzed and unable to attack!");
         }
         if (enemyIsParalyzed) {
-            System.out.println("|----------------------------------");
-            System.out.println("|" + enemyName + " is paralyzed and unable to attack!");
+            System.out.println("|--------------------------------------------|");
+            System.out.println("|" + enemyName[randomIndex] + " is paralyzed and unable to attack!");
         }
-        System.out.println("|----------------------------------");
+        System.out.println("|--------------------------------------------|");
     }
 
     private static String getAttackName(int attack) {
@@ -239,11 +254,13 @@ public class EopMain {
         }
     }
 
-    private static void displayWinner(String playerName, int playerHP, String enemyName, int enemyHP) {
+    private static void displayWinner(String playerName, int playerHP, String[] enemyName,int randomIndex) {
         if (playerHP <= 0) {
-            System.out.println("\n" + playerName + " is defeated. " + enemyName + " is the winner!");
+            System.out.println("\n" + playerName + " is defeated. " + enemyName[randomIndex] + " is the winner!");
         } else {
-            System.out.println("\n" + enemyName + " is defeated. " + playerName + " is the winner!");
+            System.out.println("\n" + enemyName[randomIndex] + " is defeated. " + playerName + " is the winner!");
         }
+
     }
+
 }
