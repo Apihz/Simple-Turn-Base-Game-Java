@@ -10,7 +10,7 @@ public class Test2 {
         //getPlayerName
         //getPlayerAttack
         //getPlayerAbility
-        //getAttackName
+        //getAttackNametesto
         //displayWinner
         //displayStatus
         //displayAttack
