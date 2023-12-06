@@ -1,4 +1,4 @@
-import java.util.Random;  //
+import java.util.Random;  //test
 import java.util.Scanner;
 
 public class Test2 {
