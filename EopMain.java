@@ -23,9 +23,11 @@ public class EopMain {
             {"Smackdown", "7"}
         };
         String[] enemyName = {
-            "Pikcachu", "Charizard", "Fanny", "Balmond", "Yuri"
-        };
+            "Pikcachu", "Charizard", "Fanny", "Balmond", "Yuri"};
+
         playTurn(scanner, attacks, enemyName ); //call
+        
+        scanner.close();
     }
 
     private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName) {
