@@ -16,7 +16,7 @@ public class EopMain {
         //displayAttack
         //calculateDamage
         
-        Scanner scanner = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);
         String[][] attacks = {
             {"Punch", "4"},
             {"Kick", "6"},
@@ -25,14 +25,14 @@ public class EopMain {
         String[] enemyName = {
             "Pikcachu", "Charizard", "Fanny", "Balmond", "Yuri"};
 
-        playTurn(scanner, attacks, enemyName ); //call
+        playTurn(input, attacks, enemyName ); //call
         
-        scanner.close();
+        input.close();
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName) {
+    private static void playTurn(Scanner input, String[][] attacks, String[] enemyName) {
         Random random = new Random();
-        String playerName = getPlayerName(scanner); //callj
+        String playerName = getPlayerName(input); //callj
         int playerHP = 100;
 
         int randomIndex = random.nextInt(enemyName.length);
@@ -48,9 +48,9 @@ public class EopMain {
             int enemyPoisonCount = 0;
             boolean enemyIsParalyzed = false;
 
-            int playerAttack = getPlayerAttack(scanner, attacks); //call
+            int playerAttack = getPlayerAttack(input, attacks); //call
             int playerDamage = calculateDamage(playerAttack); //call
-            int playerAbility = getPlayerAbility(scanner);  //call
+            int playerAbility = getPlayerAbility(input);  //call
 
             int enemyAttack = random.nextInt(attacks.length) + 1; // Random attack for the enemy
             int enemyDamage = calculateDamage(enemyAttack); //call
@@ -157,9 +157,9 @@ public class EopMain {
         displayWinner(playerName, playerHP, enemyName, randomIndex);
     }
 
-    private static String getPlayerName(Scanner scanner) {
+    private static String getPlayerName(Scanner input) {
         System.out.print("Enter your name: ");
-        return scanner.nextLine();
+        return input.nextLine();
     }
 
     private static void displayStatus(String playerName, int playerHP, String[] enemyName, int enemyHP, int randomIndex) {
@@ -167,7 +167,7 @@ public class EopMain {
         System.out.println(enemyName[randomIndex] + " || HP: " + enemyHP);
     }
 
-    private static int getPlayerAttack(Scanner scanner, String[][] attacks) {
+    private static int getPlayerAttack(Scanner input, String[][] attacks) {
         int attack;
         do {
             System.out.println("\nAttack list:");
@@ -175,7 +175,7 @@ public class EopMain {
                 System.out.println((i + 1) + ". " + attacks[i][0] + " (Dmg: " + attacks[i][1] + ")");
             }
             System.out.print("Select attack: ");
-            attack = scanner.nextInt();
+            attack = input.nextInt();
 
             if (attack < 1 || attack > attacks.length) {
                 System.out.println("Invalid selection. Please choose a valid attack (1-" + attacks.length + ").");
@@ -199,7 +199,7 @@ public class EopMain {
         }
     }
 
-    private static int getPlayerAbility(Scanner scanner) {
+    private static int getPlayerAbility(Scanner input) {
         int ability;
         do {
             System.out.println("\nAbility list:");
@@ -209,7 +209,7 @@ public class EopMain {
             System.out.println("4. Defense (Enemy attack multiplied by 0.7)");
             System.out.println("5. Heal (Health +10)");
             System.out.print("Select your ability: ");
-            ability = scanner.nextInt();
+            ability = input.nextInt();
             System.out.println();
 
             if (ability < 1 || ability > 5) {
