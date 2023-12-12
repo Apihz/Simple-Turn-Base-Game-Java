@@ -96,7 +96,7 @@ public class EopMain {
                         System.out.println(playerName + " used Poison! " + enemyName[randomIndex] + " will lose 5 HP for 4 turns!");
                         break;
                     case 4:
-                        enemyDamage = (int) (playerDamage * 0.7);
+                        enemyDamage = (int) (enemyDamage * 0.7);
                         System.out.println(playerName + " used Defense! " + enemyName[randomIndex] + "'s attack power is weakened by 30%!");
                         break;
                     case 5:
@@ -134,7 +134,7 @@ public class EopMain {
                         System.out.println(enemyName[randomIndex] + " used Poison! " + playerName + " will lose 5 HP for 4 turns!");
                         break;
                     case 4:
-                        playerDamage = (int) (enemyDamage * 0.7);
+                        playerDamage = (int) (playerDamage * 0.7);
                         System.out.println(enemyName[randomIndex] + " used Smokescreen! " + playerName + "'s attack power is weakened by 30%!");
                         break;
                     case 5:
