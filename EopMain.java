@@ -103,11 +103,13 @@ public class EopMain {
                         if (playerHP < playerMaxHP) {
                             if (playerHP + healingAmount > playerMaxHP) {
                                 playerHP = playerMaxHP;
-                            } else {
+                            } 
+                            else {
                                 playerHP += healingAmount;
                             }
-                            System.out.println(playerName + " used Heal! " + playerName + " recovers " + healingAmount + " HP!");
-                        } else {
+                            System.out.println(playerName + " used Heal! " + playerName + " recovers "+COLOR[2]+ healingAmount + " HP!"+RESET);
+                        } 
+                        else {
                             System.out.println(playerName + " is already at full health!");
                         }
                         break;
@@ -145,7 +147,7 @@ public class EopMain {
                             else {
                                 enemyHP += healingAmount;
                             }
-                            System.out.println(enemyName[randomIndex] + " used Heal! " + enemyName[randomIndex] + " recovers " + healingAmount + " HP!");
+                            System.out.println(enemyName[randomIndex] + " used Heal! " + enemyName[randomIndex] + " recovers "+COLOR[2] + healingAmount + " HP!"+RESET);
                         } else {
                             System.out.println(enemyName[randomIndex] + " is already at full health!");
                         }
@@ -205,7 +207,7 @@ public class EopMain {
                 System.out.println((i + 1) + ". " + attacks[i][0] + " (Dmg: " + attacks[i][1] + ") (Mana: " + attacks[i][2] + ")");
             }
             System.out.print("Select attack: ");
-            attack = scanner.nextInt();
+            attack = scanner.nextInt();//test
 
             if (attack < 1 || attack > attacks.length) {
                 System.out.println("Invalid selection. Please choose a valid attack (1-" + attacks.length + ").");
