@@ -38,8 +38,7 @@ public class EopMain {
             {"Ultimate", "25", "40"}
         };
         
-        String[] enemyName = {
-            "Pikachu", "Charizard", "Fanny", "Balmond", "Yuri"};
+        String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Yuri"};
 
         playTurn(scanner, attacks, enemyName, RESET, COLOR); //call
         
@@ -179,12 +178,10 @@ public class EopMain {
                 enemyMana += 7; // Gain mana after basic attack
             }
 
+            displayAttack(playerName, enemyName, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex); //call
+            
             playerIsParalyzed = false;
             enemyIsParalyzed = false;
-
-            displayAttack(playerName, enemyName, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex); //call
-
-            
         }
         displayWinner(playerName, playerHP, enemyName, randomIndex, RESET, COLOR);
     }
@@ -234,7 +231,6 @@ public class EopMain {
                 break; 
             }
         }
-
         return attack+1;
     }
 
@@ -321,7 +317,6 @@ public class EopMain {
         }
         System.out.print(RESET);
     }
-
 }
 
             
