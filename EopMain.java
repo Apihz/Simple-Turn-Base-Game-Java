@@ -37,15 +37,19 @@ public class EopMain {
             {"Smackdown", "7", "30"},
             {"Ultimate", "25", "40"}
         };
+
+       int[] abilityLimit = {0,5,10,15,20,25};
+
+        
         
         String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi"};
 
-        playTurn(scanner, attacks, enemyName, RESET, COLOR); //call
+        playTurn(scanner, attacks, enemyName, RESET, COLOR, abilityLimit); //call
         
         scanner.close();
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName, String RESET, String COLOR[]) {
+    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName, String RESET, String COLOR[], int[] abilityLimit) {
         Random random = new Random();
         String playerName = getPlayerName(scanner); //call
         int playerHP = 100;
@@ -59,21 +63,21 @@ public class EopMain {
         while (playerHP > 0 && enemyHP > 0) {
 
             displayStatus(playerName, playerHP, playerMana, enemyName, enemyHP, enemyMana, randomIndex, RESET, COLOR); //call
-            
+           
             int playerPoisonCount = 0;
             boolean playerIsParalyzed = false;
             int enemyPoisonCount = 0;
             boolean enemyIsParalyzed = false;
 
             int playerAttack = getPlayerAttack(scanner, attacks, playerMana); //call
-            int playerAbility = getPlayerAbility(scanner);
+            int playerAbility = getPlayerAbility(scanner,playerMana,abilityLimit);
             int playerDamage = calculateDamage(playerAttack, attacks); //call
             int playerManaCost = Integer.parseInt(attacks[playerAttack - 1][2]);
             
             
             int enemyAttack = getEnemyAttack(random,attacks,enemyMana); // Random attack for the enemy
             int enemyDamage = calculateDamage(enemyAttack, attacks); //call
-            int enemyManaCost = Integer.parseInt(attacks[enemyAttack-1][2]);
+            int enemyManaCost = (Integer.parseInt(attacks[enemyAttack-1][2]));
             int enemyAbility = random.nextInt(5) + 1;
             
 
@@ -82,6 +86,9 @@ public class EopMain {
 
             if (!playerIsParalyzed) {
                 switch (playerAbility) {
+                    case 0:
+                        System.out.println(playerName + " does not use ability!");
+                        break;
                     case 1:
                         playerDamage = (int) (playerDamage * 1.25); // Basic attack gets bonus damage
                         System.out.println(playerName + " used Boost! Attack power increased by 25%!");
@@ -107,6 +114,7 @@ public class EopMain {
                                 playerHP += healingAmount;
                             }
                             System.out.println(playerName + " used Heal! " + playerName + " recovers "+COLOR[2]+ healingAmount + " HP!"+RESET);
+                            
                         } 
                         else {
                             System.out.println(playerName + " is already at full health!");
@@ -169,7 +177,7 @@ public class EopMain {
             }
             if(!playerIsParalyzed){
                 enemyHP -= playerDamage;
-                playerMana -= playerManaCost; // Deduct mana
+                playerMana -= (playerManaCost + abilityLimit[playerAbility])  ; // Deduct mana
                 playerMana += 7; // Gain mana after basic attack
             }    
             if(!enemyIsParalyzed){
@@ -250,24 +258,26 @@ public class EopMain {
         }
     }
 
-    private static int getPlayerAbility(Scanner scanner) {
-        int ability;
+    private static int getPlayerAbility(Scanner scanner, int playerMana, int[] abilityLimit) {
+        int ability; 
         do {
             System.out.println("\nAbility list:");
-            System.out.println("1. Boost (Dmg: Multiply 1.5x)");
-            System.out.println("2. Paralyze enemy (Enemy turn will be skipped)");
-            System.out.println("3. Poison (Enemy health drops 5 for 4 turns)");
-            System.out.println("4. Defense (Enemy attack multiplied by 0.7)");
-            System.out.println("5. Heal (Health +10)");
+            System.out.println("0. Skip ability");
+            System.out.println("1. Boost (Dmg: Multiply 1.5x) 5");
+            System.out.println("2. Paralyze enemy (Enemy turn will be skipped) 10");
+            System.out.println("3. Poison (Enemy health drops 5 for 4 turns) 15");
+            System.out.println("4. Defense (Enemy attack multiplied by 0.7) 20");
+            System.out.println("5. Heal (Health +10) 25");
             System.out.print("Select your ability: ");
             ability = scanner.nextInt();
             System.out.println();
 
-            if (ability < 1 || ability > 5) {
-                System.out.println("Invalid selection. Please choose a valid ability (1-5).");
-            }
-
-        } while (ability < 1 || ability > 5);
+            if (ability < 0 || ability > 5) {
+                System.out.println("Invalid selection. Please choose a valid ability (0-5).");
+            }  else if(playerMana < abilityLimit[ability])
+                System.out.println("Unsufficient Mana.");
+        } while (ability < 0 || ability > 5 ||playerMana < abilityLimit[ability] );
+      
 
         return ability;
     }
