@@ -38,14 +38,14 @@ public class EopMain {
             {"Ultimate", "25", "40"}
         };
         
-        String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Yuri"};
+        String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi"};
 
         playTurn(scanner, attacks, enemyName, RESET, COLOR); //call
         
         scanner.close();
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName,String RESET, String COLOR[]) {
+    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName, String RESET, String COLOR[]) {
         Random random = new Random();
         String playerName = getPlayerName(scanner); //call
         int playerHP = 100;
@@ -214,11 +214,11 @@ public class EopMain {
 
         } while (attack < 1 || attack > attacks.length || playerMana < Integer.parseInt(attacks[attack-1][2]));
         
-        while (attack < 1 || attack > attacks.length || playerMana < Integer.parseInt(attacks[attack - 1][2])) {
+       /*  while (attack < 1 || attack > attacks.length || playerMana < Integer.parseInt(attacks[attack - 1][2])) {
             System.out.println("Please choose a valid attack (1-" + attacks.length + ") that you have enough mana for.");
             System.out.print("Select attack: ");
             attack = scanner.nextInt();
-        }
+        }*/
 
         return attack;
     }
