@@ -2,7 +2,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class EopMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) {        
+        Scanner scanner = new Scanner(System.in);
         //using ASCII code to design the terminal so it will be colorful and easy to look and read
         final String COLOR[] = {"\u001B[30m","\u001B[31m","\u001B[32m","\u001B[33m","\u001B[34m","\u001B[35m","\u001B[36m","\u001B[37m"};
         /*
@@ -15,8 +16,17 @@ public class EopMain {
         6=\u001B[36m	Cyan text
         7=\u001B[37m	White text
          */
-        final String RESET ="\u001B[0m";
-        System.out.print(RESET);//Normalize terminal color white for all user (vscode/netbeans/etc)
+        String RESET ="\u001B[0m";
+        System.out.println("Enter your terminal background 0 for (BLACK), 1 for (WHITE): ");
+        int bg = scanner.nextInt();
+        scanner.nextLine();
+        if(bg == 0){
+            System.out.print(RESET);
+        }
+        else if(bg == 1){
+            System.out.print(COLOR[0]);
+            RESET = COLOR[0];
+        }
 
         //method:
         //main
@@ -30,7 +40,6 @@ public class EopMain {
         //displayAttack
         //calculateDamage
         
-        Scanner scanner = new Scanner(System.in);
         String[][] attacks = {
             {"Punch", "4", "0"},
             {"Kick", "6", "15"},
@@ -38,9 +47,7 @@ public class EopMain {
             {"Ultimate", "25", "40"}
         };
 
-       int[] abilityLimit = {0,5,10,15,20,25};
-
-        
+        int[] abilityLimit = {0,5,10,15,20,25};
         
         String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi"};
 
@@ -50,6 +57,7 @@ public class EopMain {
     }
 
     private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName, String RESET, String COLOR[], int[] abilityLimit) {
+        
         Random random = new Random();
         String playerName = getPlayerName(scanner); //call
         int playerHP = 100;
