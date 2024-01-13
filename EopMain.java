@@ -1,5 +1,6 @@
 import java.util.Random;
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class EopMain {
     public static void main(String[] args) {        
@@ -17,177 +18,229 @@ public class EopMain {
         7=\u001B[37m	White text
          */
         String RESET ="\u001B[0m";
-        System.out.println("Enter your terminal background 0 for (BLACK), 1 for (WHITE): ");
-        int bg = scanner.nextInt();
-        scanner.nextLine();
-        if(bg == 0){
-            System.out.print(RESET);
-        }
-        else if(bg == 1){
-            System.out.print(COLOR[0]);
-            RESET = COLOR[0];
-        }
+        char restart ='A';
+        do{
+            restart = 'A';//reset restart to A so it dont keep looping after user choose Y
 
-        //method:
-        //main
-        //playTurn
-        //getPlayerName
-        //getPlayerAttack
-        //getPlayerAbility
-        //getAttackName
-        //displayWinner
-        //displayStatus
-        //displayAttack
-        //calculateDamage
-        
-        String[][] attacks = {
-            {"Punch", "4", "0"},
-            {"Kick", "6", "15"},
-            {"Smackdown", "7", "30"},
-            {"Ultimate", "25", "40"}
-        };
-        
-        String[] enemyName = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi"};
+            System.out.printf("-------WELCOME TO ZAHRUWI TURN BASE GAME-------\n\n");
+            System.out.println("Choose text color [0 for BLACK] & [1 for WHITE]");
+            System.out.println("Notes:");
+            System.out.println("If your terminal background color is white,choose 0.");
+            System.out.println("If your terminal background color is black,choose 1.");
+            System.out.print("Choice: ");
+            do{
+                try{
+                    int bg;
+                    do{
+                        bg = scanner.nextInt();
+                        scanner.nextLine();
+                        if(bg == 0){
+                            System.out.print(RESET);
+                        }
+                        else if(bg == 1){
+                            System.out.print(COLOR[0]);
+                            RESET = COLOR[0];
+                        }
+                        if(bg < 0 || bg > 1)
+                            System.out.println("Please input a valid number");
+                    }while(bg < 0 || bg > 1);
+                    break;
+                }
+                catch (InputMismatchException ex) {
+                    System.out.println("Please input a valid number");
+                    scanner.nextLine();//Clear scanner buffer after wrong input
+                }
+            }while(true);
 
-        playTurn(scanner, attacks, enemyName, RESET, COLOR); //call
+            /*method:
+            main
+            playTurn
+            getPlayerName
+            getPlayerAttack
+            getPlayerAbility
+            getAttackName
+            displayWinner
+            displayStatus
+            displayAttack
+            calculateDamage*/
+            
+            String[][] attacks = {
+                {"Punch", "4", "0"},
+                {"Kick ", "6", "15"},
+                {"Smackdown", "7", "30"},
+                {"Ultimate", "25", "40"}
+            };
+            
+            String[] enemyNameIndex = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi", "Kratos","Batman"};
+            
+            playTurn(scanner, attacks, enemyNameIndex, RESET, COLOR); //call
+            System.out.println("\nDo you want to continue (Y/N): ");
+
+            do {
+                try {
+                    String userInput = scanner.nextLine();
+                    if (!userInput.isEmpty()) {
+                        restart = userInput.charAt(0);
+                    }
+                    else {
+                        continue;// Go back to the beginning of the loop
+                    }  
+                    if (restart != 'Y' && restart != 'N' && restart != 'A' /* additional A because i  initialized restart with A so this println will not occur*/) {
+                        System.out.println("Please input valid char (Y/N):");
+                    }
+                    break;
+                } catch (InputMismatchException ex) {
+                    System.out.println("Please input valid char (Y/N)");
+                }
+            } while (restart != 'Y' && restart != 'N');
+            
+            if(restart == 'N')
+            break;
+
+        }while(restart != 'N');
         
         scanner.close();
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyName, String RESET, String COLOR[]) {
+    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyNameIndex, String RESET, String COLOR[]) {
         Random random = new Random();
         String playerName = getPlayerName(scanner); //call
         int playerHP = 100;
-        int playerMana = 10;
+        int playerEnergy = 10;
 
-        int randomIndex = random.nextInt(enemyName.length);
-        System.out.println("Your enemy is " + enemyName[randomIndex]);
+        int randomIndex = random.nextInt(enemyNameIndex.length);
+        String enemyName =enemyNameIndex[randomIndex]; //changed enemyName type to normal string instead of array string because it will conflict with playerName when used in menthod if not changed
+        System.out.println("Your enemy is " + enemyName);
         int enemyHP = 100;
-        int enemyMana = 10;
+        int enemyEnergy = 10;
+
+        boolean[][] abilityLimit = { 
+        {true,true,true,true,true},
+        {true,true,true,true,true}};
+
+        int[][] limitCount = {{5,3,3,4,3},{5,3,3,4,3}};
+        
+       
 
         while (playerHP > 0 && enemyHP > 0) {
 
-            displayStatus(playerName, playerHP, playerMana, enemyName, enemyHP, enemyMana, randomIndex, RESET, COLOR); //call
+            displayStatus(playerName, playerHP, playerEnergy, enemyName, enemyHP, enemyEnergy, randomIndex, RESET, COLOR); //call
             
             int playerPoisonCount = 0;
             boolean playerIsParalyzed = false;
             int enemyPoisonCount = 0;
             boolean enemyIsParalyzed = false;
 
-            int playerAttack = getPlayerAttack(scanner, attacks, playerMana); //call
-            int playerAbility = getPlayerAbility(scanner);
+            int playerAttack = getPlayerAttack(scanner, attacks, playerEnergy, COLOR, RESET); //call
+            int playerAbility = getPlayerAbility(scanner,abilityLimit,limitCount,COLOR,RESET);
             int playerDamage = calculateDamage(playerAttack, attacks); //call
-            int playerManaCost = Integer.parseInt(attacks[playerAttack - 1][2]);
+            int playerEnergyCost = Integer.parseInt(attacks[playerAttack - 1][2]);
             
-            
-            int enemyAttack = getEnemyAttack(random,attacks,enemyMana); // Random attack for the enemy
+            int enemyAttack = getEnemyAttack(random,attacks,enemyEnergy); // Random attack for the enemy
             int enemyDamage = calculateDamage(enemyAttack, attacks); //call
-            int enemyManaCost = Integer.parseInt(attacks[enemyAttack-1][2]);
-            int enemyAbility = random.nextInt(5) + 1;
+            int enemyEnergyCost = Integer.parseInt(attacks[enemyAttack-1][2]);
+            int enemyAbility = getEnemyAbility(abilityLimit, limitCount);
             
-
             int playerMaxHP = 100;
             int healingAmount = 10;
 
             if (!playerIsParalyzed) {
+                System.out.println("|----------------------------------------------------------------");
+                System.out.print("|"+COLOR[2]);
                 switch (playerAbility) {
                     case 1:
-                        playerDamage = (int) (playerDamage * 1.25); // Basic attack gets bonus damage
-                        System.out.println(playerName + " used Boost! Attack power increased by 25%!");
+                        playerDamage = ability1(playerDamage,playerName);
+                        limitCount[0][0]-=1;
                         break;
                     case 2:
-                        enemyIsParalyzed = true;
-                        System.out.println(playerName + " used Paralyze! " + enemyName[randomIndex] + " will be unable to attack next turn!");
+                        enemyIsParalyzed = ability2(enemyIsParalyzed, playerName, enemyName); 
+                        limitCount[0][1]-=1;
                         break;
                     case 3:
-                        enemyPoisonCount = 4;
-                        System.out.println(playerName + " used Poison! " + enemyName[randomIndex] + " will lose 5 HP for 4 turns!");
+                        enemyPoisonCount = ability3(enemyPoisonCount, playerName, enemyName);
+                        limitCount[0][2]-=1;
                         break;
                     case 4:
-                        enemyDamage = (int) (enemyDamage * 0.7);
-                        System.out.println(playerName + " used Defense! " + enemyName[randomIndex] + "'s attack power is weakened by 30%!");
+                        enemyDamage = ability4(enemyDamage, playerName, enemyName);
+                        limitCount[0][3]-=1;
                         break;
                     case 5:
-                        if (playerHP < playerMaxHP) {
-                            if (playerHP + healingAmount > playerMaxHP) {
-                                playerHP = playerMaxHP;
-                            } 
-                            else {
-                                playerHP += healingAmount;
-                            }
-                            System.out.println(playerName + " used Heal! " + playerName + " recovers "+COLOR[2]+ healingAmount + " HP!"+RESET);
-                        } 
-                        else {
-                            System.out.println(playerName + " is already at full health!");
-                        }
+                        playerHP = ability5(playerHP, playerMaxHP, healingAmount, playerName, COLOR, RESET);
+                        limitCount[0][4]-=1;
                         break;
                     default:
-                        System.out.println(playerName + " used an invalid ability!");
+                        System.out.println(playerName + " skipped ability!");
                 }
-                
+                System.out.print(RESET);
             } 
             else {
-                System.out.println(playerName + " is paralyzed and unable to attack!");
+                System.out.println("|----------------------------------------------------------------");
+                System.out.println("|"+COLOR[2]+playerName + " is paralyzed and unable to attack!"+RESET);
             }
             if (!enemyIsParalyzed) {
+                System.out.println("|----------------------------------------------------------------");
+                System.out.print("|"+COLOR[1]);
                 switch (enemyAbility) {
                     case 1:
-                        enemyDamage = (int) (enemyDamage * 1.25); // Basic attack gets bonus damage
-                        System.out.println(enemyName[randomIndex] + " used Boost! Attack power increased by 25%!");
+                        enemyDamage = ability1(enemyDamage,enemyName);
+                        limitCount[1][0]-=1;
                         break;
                     case 2:
-                        playerIsParalyzed = true;
-                        System.out.println(enemyName[randomIndex] + " used Paralyze! " + playerName + " will be unable to attack next turn!");
+                        playerIsParalyzed = ability2(playerIsParalyzed, enemyName, playerName);
+                        limitCount[1][1]-=1;
                         break;
                     case 3:
-                        playerPoisonCount = 4;
-                        System.out.println(enemyName[randomIndex] + " used Poison! " + playerName + " will lose 5 HP for 4 turns!");
+                        playerPoisonCount = ability3(playerPoisonCount, enemyName, playerName);
+                        limitCount[1][2]-=1;
                         break;
                     case 4:
-                        playerDamage = (int) (playerDamage * 0.7);
-                        System.out.println(enemyName[randomIndex] + " used Smokescreen! " + playerName + "'s attack power is weakened by 30%!");
+                        playerDamage = ability4(playerDamage, enemyName, playerName);
+                        limitCount[1][3]-=1;
                         break;
                     case 5:
-                        if (enemyHP < playerMaxHP) {
-                            if (enemyHP + healingAmount > playerMaxHP) {
-                                enemyHP = playerMaxHP;
-                            } 
-                            else {
-                                enemyHP += healingAmount;
-                            }
-                            System.out.println(enemyName[randomIndex] + " used Heal! " + enemyName[randomIndex] + " recovers "+COLOR[2] + healingAmount + " HP!"+RESET);
-                        } else {
-                            System.out.println(enemyName[randomIndex] + " is already at full health!");
-                        }
+                        enemyHP = ability5(enemyHP, playerMaxHP, healingAmount, enemyName, COLOR, RESET);
+                        limitCount[1][4]-=1;
                         break;
                     default:
-                        System.out.println(enemyName[randomIndex] + " used an invalid ability!");
+                        System.out.println(enemyName + " skipped ability!");
                 }
-                
+                System.out.print(RESET);
+            } 
+            else {
+                System.out.println("|----------------------------------------------------------------");
+                System.out.println("|"+COLOR[1]+enemyName + " is paralyzed and unable to attack!"+RESET);
 
-            } else {
-                System.out.println(enemyName[randomIndex] + " is paralyzed and unable to attack!");
             }
-            if (enemyPoisonCount > 0) {
-                enemyHP -= 5;
-                enemyPoisonCount--;
+            for(int i=0;i<abilityLimit.length;i++){
+                for(int j=0;j<abilityLimit[0].length;j++){
+                    if(limitCount[i][j] == 0)
+                        abilityLimit[i][j]=false;
+                }
             }
-            if (playerPoisonCount > 0) {
-                playerHP -= 5;
-                playerPoisonCount--;
+            if(!playerIsParalyzed){
+                if (enemyPoisonCount > 0) {
+                    enemyHP -= 5;
+                    enemyPoisonCount--;
+                }
+            }
+            if(!enemyIsParalyzed){
+                if (playerPoisonCount > 0) {
+                    playerHP -= 5;
+                    playerPoisonCount--;
+                }
             }
             if(!playerIsParalyzed){
                 enemyHP -= playerDamage;
-                playerMana -= playerManaCost; // Deduct mana
-                playerMana += 7; // Gain mana after basic attack
+                playerEnergy -= playerEnergyCost; // Deduct mana
+                playerEnergy += 7; // Gain mana after basic attack
             }    
             if(!enemyIsParalyzed){
                 playerHP -= enemyDamage;
-                enemyMana -= enemyManaCost; // Deduct mana 
-                enemyMana += 7; // Gain mana after basic attack
+                enemyEnergy -= enemyEnergyCost; // Deduct mana 
+                enemyEnergy += 7; // Gain mana after basic attack
             }
 
-            displayAttack(playerName, enemyName, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex); //call
+            displayAttack(playerName, enemyName, attacks, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex, COLOR, RESET); //call
             
             playerIsParalyzed = false;
             enemyIsParalyzed = false;
@@ -195,47 +248,49 @@ public class EopMain {
         displayWinner(playerName, playerHP, enemyName, randomIndex, RESET, COLOR);
     }
 
+
     private static String getPlayerName(Scanner scanner) {
         System.out.print("Enter your name: ");
         return scanner.nextLine();
     }
 
-    private static void displayStatus(String playerName, int playerHP, int playerMana, String[] enemyName, int enemyHP, int enemyMana, int randomIndex, String RESET, String COLOR[]) {
-        System.out.println("\n|| " + COLOR[1] + playerName +RESET+"\t||"+ COLOR[2] +" HP: " + playerHP +RESET+ " ||\t"+COLOR[4]+" Mana: "+ playerMana+RESET+" ||");
-        System.out.println("|| "+ COLOR[1] +enemyName[randomIndex] +RESET+"\t||"+ COLOR[2] +" HP: "+ enemyHP +RESET+ " ||\t"+COLOR[4]+" Mana: " + enemyMana+RESET+" ||");
+    private static void displayStatus(String playerName, int playerHP, int playerEnergy, String enemyName, int enemyHP, int enemyEnergy, int randomIndex, String RESET, String COLOR[]) {
+        System.out.println("\n|| " + COLOR[1] + playerName +RESET+"   \t||"+ COLOR[2] +" HP: " + playerHP +RESET+ " || "+COLOR[4]+"Energy: "+ playerEnergy+RESET+" ||");
+        System.out.println("|| "+ COLOR[1] +enemyName +RESET+"\t||"+ COLOR[2] +" HP: "+ enemyHP +RESET+ " || "+COLOR[4]+"Energy: " + enemyEnergy+RESET+" ||");
     }
-
-    private static int getPlayerAttack(Scanner scanner, String[][] attacks, int playerMana) {
+    
+    private static int getPlayerAttack(Scanner scanner, String[][] attacks, int playerEnergy, String[] COLOR, String RESET) {
         int attack;
-        do {
-            System.out.println("\nAttack list:");
-            for (int i = 0; i < attacks.length; i++) {
-                System.out.println((i + 1) + ". " + attacks[i][0] + " (Dmg: " + attacks[i][1] + ") (Mana: " + attacks[i][2] + ")");
+        do{
+            try{
+                System.out.println("\nAttack list:");
+                for (int i = 0; i < attacks.length; i++) {
+                    System.out.println((i + 1) + ". "+COLOR[3]+ attacks[i][0] +RESET+ "\t||" +RESET+COLOR[1]+" Dmg: "+ attacks[i][1] +RESET+ " ||" +RESET+COLOR[4]+" Energy: " + attacks[i][2] +RESET+ " ||");
+                }
+                System.out.print("Select attack: ");
+                attack = scanner.nextInt();//test
+               
+                if (attack >= 1 && attack <= attacks.length && playerEnergy >= Integer.parseInt(attacks[attack - 1][2])) {
+                    break;
+                } 
+                else {
+                    System.out.println("Invalid selection or insufficient energy. Please choose a valid attack (1-" + attacks.length + ").");
+                }
             }
-            System.out.print("Select attack: ");
-            attack = scanner.nextInt();//test
-
-            if (attack < 1 || attack > attacks.length) {
-                System.out.println("Invalid selection. Please choose a valid attack (1-" + attacks.length + ").");
-            } else if (playerMana < Integer.parseInt(attacks[attack - 1][2])) {
-                System.out.println("Insufficient mana! You need " + attacks[attack - 1][2] + " mana to use this attack.");
+            catch (InputMismatchException ex) {
+                System.out.println("Please input a valid number.");
+                // Clear the scanner buffer
+                scanner.nextLine();
             }
-
-        } while (attack < 1 || attack > attacks.length || playerMana < Integer.parseInt(attacks[attack-1][2]));
-        
-       /*  while (attack < 1 || attack > attacks.length || playerMana < Integer.parseInt(attacks[attack - 1][2])) {
-            System.out.println("Please choose a valid attack (1-" + attacks.length + ") that you have enough mana for.");
-            System.out.print("Select attack: ");
-            attack = scanner.nextInt();
-        }*/
+        } while (true);
 
         return attack;
     }
 
-    private static int getEnemyAttack (Random random,String attacks [][], int enemyMana) {
+    private static int getEnemyAttack (Random random,String attacks [][], int enemyEnergy) {
         int attack=0;
         for(int i=3;i>=0;i--){
-            if(enemyMana >= Integer.parseInt(attacks[i][2])){
+            if(enemyEnergy >= Integer.parseInt(attacks[i][2])){
                 attack = random.nextInt(i+1);
                 break; 
             }
@@ -259,75 +314,135 @@ public class EopMain {
         }
     }
 
-    private static int getPlayerAbility(Scanner scanner) {
+    private static int getPlayerAbility(Scanner scanner, boolean[][] abilityLimit, int[][] count, String[] COLOR, String RESET) {
         int ability;
+        System.out.printf("\nAbility list:\n");
+        System.out.printf("0.%sSkip abilitiy%s\n",COLOR[3],RESET);
+        System.out.printf("1.%sBoost %s(Dmg: Multiply 1.5x) %s\t\t      ||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][0], RESET);
+        System.out.printf("2.%sParalyze enemy %s(Enemy turn will be skipped) %s||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][1], RESET);
+        System.out.printf("3.%sPoison %s(Enemy health drops 5 for 4 turns) %s  ||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][2], RESET);
+        System.out.printf("4.%sDefense %s(Enemy attack multiplied by 0.7) %s   ||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][3], RESET);
+        System.out.printf("5.%sHeal %s(Health +10) %s\t\t\t      || %sLimit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][4], RESET);
+        System.out.print("Select your ability: ");
         do {
-            System.out.println("\nAbility list:");
-            System.out.println("1. Boost (Dmg: Multiply 1.5x)");
-            System.out.println("2. Paralyze enemy (Enemy turn will be skipped)");
-            System.out.println("3. Poison (Enemy health drops 5 for 4 turns)");
-            System.out.println("4. Defense (Enemy attack multiplied by 0.7)");
-            System.out.println("5. Heal (Health +10)");
-            System.out.print("Select your ability: ");
-            ability = scanner.nextInt();
-            System.out.println();
-
-            if (ability < 1 || ability > 5) {
-                System.out.println("Invalid selection. Please choose a valid ability (1-5).");
+            try{
+                do{
+                    ability = scanner.nextInt();
+                    System.out.println();
+                    if (ability == 0)
+                        break;
+                    else if (ability < 1 || ability > 5) {
+                        System.out.println(COLOR[1]+"Invalid selection."+RESET+" Pleagse choose a valid ability (1-5).");
+                    }
+                    for (int i = 0; i < abilityLimit[0].length; i++) {
+                        if (!abilityLimit[0][i] && (ability - 1) == i) {
+                            System.out.println("You have reached the limit on this ability. Choose another one.");
+                            ability = 0;  
+                            break;
+                        }
+                    }
+                }while(ability < 1 || ability > 5);
+                break;
+            }
+            catch(InputMismatchException ex) {
+                System.out.println(COLOR[1]+"Invalid input."+RESET+"Please input a valid number.");
+                scanner.nextLine();
             }
 
-        } while (ability < 1 || ability > 5);
+        } while (true);
 
         return ability;
     }
 
-    private static void displayAttack(String playerName, String[] enemyName, int playerAttack, int playerDamage, int enemyAttack, int enemyDamage, boolean playerIsParalyzed, boolean enemyIsParalyzed, int randomIndex) {
-        String playerAttackName = getAttackName(playerAttack);
-        String enemyAttackName = getAttackName(enemyAttack);
+    private static int getEnemyAbility(boolean[][] abilityLimit, int[][] count) {
+        int ability;
+        do {
+            ability = (int) (Math.random() * 5+1) + 0; 
+            if(ability == 0)
+                break;
+            for (int i = 0; i < abilityLimit[1].length; i++) {
+                if (!abilityLimit[1][i] && (ability - 1) == i) {
+                    ability=0;
+                    break;
+                }
+            }
+        } while (ability < 1 || ability > 5);
+    
+        return ability;
+    }
+
+    private static void displayAttack(String playerName, String enemyName,String[][] attacks, int playerAttack, int playerDamage, int enemyAttack, int enemyDamage, boolean playerIsParalyzed, boolean enemyIsParalyzed, int randomIndex, String[] COLOR, String RESET) {
+        String playerAttackName = attacks[playerAttack-1][0];
+        String enemyAttackName = attacks[enemyAttack-1][0];
         if (!playerIsParalyzed) {
-            System.out.println("|--------------------------------------------|");
-            System.out.println("|" + playerName + " used " + playerAttackName + " and dealt " + playerDamage + " damage to " + enemyName[randomIndex] + "|");
+            System.out.println("|----------------------------------------------------------------");
+            //System.out.println("|" +COLOR[2] +playerName +RESET+ " used "+COLOR[1] + playerAttackName +RESET+ " and dealt "+COLOR[1] + playerDamage +RESET+" damage to "+COLOR[2] + enemyName + RESET);
+            System.out.println("|" +COLOR[2] +playerName+ " used "+playerAttackName+ " and dealt "+ playerDamage +" damage to "+ enemyName + RESET);
         } 
         if (playerIsParalyzed) {
-            System.out.println("|--------------------------------------------|");
-            System.out.println("|" + playerName + " is paralyzed and unable to attack!");
+            System.out.println("|----------------------------------------------------------------");
+            System.out.println("|"+COLOR[2] + playerName + " is paralyzed and unable to attack!"+RESET);
         }
         if (!enemyIsParalyzed) {
-            System.out.println("|--------------------------------------------|");
-            System.out.println("|" + enemyName[randomIndex]+ " used " + enemyAttackName + " and dealt " + enemyDamage + " damage to " + playerName + "|");
+            System.out.println("|----------------------------------------------------------------");
+            System.out.println("|"+COLOR[1] + enemyName+ " used " + enemyAttackName + " and dealt " + enemyDamage + " damage to " + playerName + RESET);
         }
         if (enemyIsParalyzed) {
-            System.out.println("|--------------------------------------------|");
-            System.out.println("|" + enemyName[randomIndex] + " is paralyzed and unable to attack!");
+            System.out.println("|----------------------------------------------------------------");
+            System.out.println("|"+COLOR[1] + enemyName + " is paralyzed and unable to attack!"+RESET);
         }
-        System.out.println("|--------------------------------------------|");
+        System.out.println("|----------------------------------------------------------------");
     }
 
-    private static String getAttackName(int attack) {
-        switch (attack) {
-            case 1:
-                return "Punch";
-            case 2:
-                return "Kick";
-            case 3:
-                return "Smackdown";
-            case 4:
-                return "Ultimate";
-            default:
-                return "Unknown Attack";
-        }
+
+    private static int ability1 (int damage,String name){
+        damage = (int) (damage* 1.25); // Basic attack gets bonus damage
+        System.out.println(name + " used Boost! Attack power increased by 25%!");
+        return damage;
     }
 
-    private static void displayWinner(String playerName, int playerHP, String[] enemyName,int randomIndex,String RESET,String COLOR[] ) {
-        if (playerHP <= 0) {
-            System.out.println("\n"+COLOR[1] + playerName + " is defeated. " +COLOR[2]+ enemyName[randomIndex] + " is the winner!");
+    private static boolean ability2 (boolean isParalyzed, String attackerName, String targetName){
+        isParalyzed = true;
+        System.out.println(attackerName+ " used Paralyze! " + targetName + " will be unable to attack next turn!");
+        return isParalyzed;
+    }
+
+    private static int ability3 (int poisonCount, String attckerName, String targetName){
+        poisonCount = 4;
+        System.out.println(attckerName + " used Poison! " + targetName + " will lose 5 HP for 4 turns!");
+        return poisonCount;
+    }
+
+    private static int ability4 (int damage, String attackerName, String targetName){
+        damage = (int) (damage * 0.7);
+        System.out.println(attackerName + " used Smokescreen! " + targetName + "'s attack power is weakened by 30%!");
+        return damage;
+    }
+
+    private static int ability5 (int hp, int playerMaxHP, int healingAmount, String name, String[] COLOR, String RESET){
+        if (hp < playerMaxHP) {
+            if (hp + healingAmount > playerMaxHP) {
+                hp = playerMaxHP;
+            } 
+            else {
+                hp+= healingAmount;
+            }
+            System.out.println(name + " used Heal! " + name + " recovers "+COLOR[2] + healingAmount + " HP!"+RESET);
         } else {
-            System.out.println("\n"+COLOR[1]+ enemyName[randomIndex] + " is defeated. "+COLOR[2] + playerName + " is the winner!");
+            System.out.println(name+ " is already at full health!");
+        }
+        return hp;
+    }
+    
+    private static void displayWinner(String playerName, int playerHP, String enemyName,int randomIndex,String RESET,String COLOR[] ) {
+        if (playerHP <= 0) {
+            System.out.println("\n"+COLOR[1] + playerName + " is defeated. " +COLOR[2]+ enemyName + " is the winner!");
+        } else {
+            System.out.println("\n"+COLOR[1]+ enemyName + " is defeated. "+COLOR[2] + playerName + " is the winner!");
         }
         System.out.print(RESET);
     }
 }
 
             
-
-            
+ 
