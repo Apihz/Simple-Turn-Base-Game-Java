@@ -211,12 +211,15 @@ public class EopMain {
                 System.out.println("|"+COLOR[1]+enemyName + " is paralyzed and unable to attack!"+RESET);
 
             }
-            for(int i=0;i<abilityLimit.length;i++){
-                for(int j=0;j<abilityLimit[0].length;j++){
-                    if(limitCount[i][j] == 0)
-                        abilityLimit[i][j]=false;
+            for (int i = 0; i < abilityLimit.length; i++) {
+                for (int j = 0; j < abilityLimit[0].length; j++) {
+                    if (limitCount[i][j] == 0) {
+                        abilityLimit[i][j] = false;
+                    }
                 }
+                    
             }
+
             if(!playerIsParalyzed){
                 if (enemyPoisonCount > 0) {
                     enemyHP -= 5;
@@ -341,7 +344,7 @@ public class EopMain {
                             break;
                         }
                     }
-                }while(ability < 1 || ability > 5);
+                }while(ability < 0 || ability > 5);
                 break;
             }
             catch(InputMismatchException ex) {
@@ -366,7 +369,7 @@ public class EopMain {
                     break;
                 }
             }
-        } while (ability < 1 || ability > 5);
+        } while (ability < 0 || ability > 5);
     
         return ability;
     }
