@@ -22,7 +22,7 @@ public class EopMain {
         do{
             restart = 'A';//reset restart to A so it dont keep looping after user choose Y
 
-            System.out.printf("-------WELCOME TO ZAHRUWI TURN BASE GAME-------\n\n");
+            System.out.printf("-------WELCOME TO ZAHRUWI TURN-BASED GAME-------\n\n");
             System.out.println("Choose text color [0 for BLACK] & [1 for WHITE]");
             System.out.println("Notes:");
             System.out.println("If your terminal background color is white,choose 0.");
@@ -118,7 +118,7 @@ public class EopMain {
         {true,true,true,true,true},
         {true,true,true,true,true}};
 
-        int[][] limitCount = {{5,3,3,4,3},{5,3,3,4,3}};
+        int[][] limitCount = {{5,3,2,4,3},{5,3,2,4,3}};
         
        
 
