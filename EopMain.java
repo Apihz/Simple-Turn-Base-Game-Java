@@ -56,19 +56,26 @@ public class EopMain {
             main
             playTurn
             getPlayerName
-            getPlayerAttack
-            getPlayerAbility
-            getAttackName
-            displayWinner
             displayStatus
+            getPlayerAttack
+            getEnemyAttack
+            calculateDamage
+            getPlayerAbility
+            getEnemyAbility
             displayAttack
-            calculateDamage*/
+            ability1
+            ability2
+            ability3
+            ability4
+            ability5
+            displayWinner
+            */
             
             String[][] attacks = {
                 {"Punch", "4", "0"},
-                {"Kick ", "6", "15"},
-                {"Smackdown", "7", "30"},
-                {"Ultimate", "25", "40"}
+                {"Kick ", "7", "15"},
+                {"Smackdown", "15", "30"},
+                {"Ultimate", "30", "50"}
             };
             
             String[] enemyNameIndex = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi", "Kratos","Batman"};
@@ -216,23 +223,23 @@ public class EopMain {
                     if (limitCount[i][j] == 0) {
                         abilityLimit[i][j] = false;
                     }
-                }
-                    
+                }   
             }
 
-            if(!playerIsParalyzed){
-                if (enemyPoisonCount > 0) {
+            if(!playerIsParalyzed){//if PlayerIsParalyzed is true,this function will be executed
+                if (enemyPoisonCount > 0) {//also if only the poison count is more that 0,the function will executed
                     enemyHP -= 5;
                     enemyPoisonCount--;
                 }
             }
-            if(!enemyIsParalyzed){
+            if(!enemyIsParalyzed){//same with player
                 if (playerPoisonCount > 0) {
                     playerHP -= 5;
                     playerPoisonCount--;
                 }
             }
-            if(!playerIsParalyzed){
+            if(!playerIsParalyzed){/*only when the player/enemy is not paralyzed,the this function will be executed.
+                                    This is to prevent the player hp,energy deducted even after the player/enemy is paralyzed*/
                 enemyHP -= playerDamage;
                 playerEnergy -= playerEnergyCost; // Deduct mana
                 playerEnergy += 7; // Gain mana after basic attack
@@ -245,7 +252,7 @@ public class EopMain {
 
             displayAttack(playerName, enemyName, attacks, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex, COLOR, RESET); //call
             
-            playerIsParalyzed = false;
+            playerIsParalyzed = false;//to reset the player and enemy paralyzed parameter to false after each loop is done
             enemyIsParalyzed = false;
         }
         displayWinner(playerName, playerHP, enemyName, randomIndex, RESET, COLOR);
@@ -253,25 +260,25 @@ public class EopMain {
 
 
     private static String getPlayerName(Scanner scanner) {
-        System.out.print("Enter your name: ");
+        System.out.print("Enter your name: ");//to get player name
         return scanner.nextLine();
     }
 
     private static void displayStatus(String playerName, int playerHP, int playerEnergy, String enemyName, int enemyHP, int enemyEnergy, int randomIndex, String RESET, String COLOR[]) {
         System.out.println("\n|| " + COLOR[1] + playerName +RESET+"   \t||"+ COLOR[2] +" HP: " + playerHP +RESET+ " || "+COLOR[4]+"Energy: "+ playerEnergy+RESET+" ||");
-        System.out.println("|| "+ COLOR[1] +enemyName +RESET+"\t||"+ COLOR[2] +" HP: "+ enemyHP +RESET+ " || "+COLOR[4]+"Energy: " + enemyEnergy+RESET+" ||");
+        System.out.println("|| "+ COLOR[1] +enemyName +RESET+"\t||"+ COLOR[2] +" HP: "+ enemyHP +RESET+ " || "+COLOR[4]+"Energy: " + enemyEnergy+RESET+" ||");//display player HP and Energy
     }
     
     private static int getPlayerAttack(Scanner scanner, String[][] attacks, int playerEnergy, String[] COLOR, String RESET) {
         int attack;
         do{
             try{
-                System.out.println("\nAttack list:");
+                System.out.println("\nAttack list:");//printout all attack list using array
                 for (int i = 0; i < attacks.length; i++) {
                     System.out.println((i + 1) + ". "+COLOR[3]+ attacks[i][0] +RESET+ "\t||" +RESET+COLOR[1]+" Dmg: "+ attacks[i][1] +RESET+ " ||" +RESET+COLOR[4]+" Energy: " + attacks[i][2] +RESET+ " ||");
                 }
                 System.out.print("Select attack: ");
-                attack = scanner.nextInt();//test
+                attack = scanner.nextInt();//get input attack from user
                
                 if (attack >= 1 && attack <= attacks.length && playerEnergy >= Integer.parseInt(attacks[attack - 1][2])) {
                     break;
@@ -296,7 +303,9 @@ public class EopMain {
             if(enemyEnergy >= Integer.parseInt(attacks[i][2])){
                 attack = random.nextInt(i+1);
                 break; 
-            }
+            }/*to get enemy attack by generating random number that also
+             follow the rules,(if it didnt energy,it cant choose the ability.Next it will
+             proceed to generate another number that have enough energy*/
         }
         return attack+1;
     }
@@ -314,12 +323,12 @@ public class EopMain {
                 return attackx;
             default:
                 return 0;
-        }
+        }//convert all attack from string to int and return to attackx
     }
 
     private static int getPlayerAbility(Scanner scanner, boolean[][] abilityLimit, int[][] count, String[] COLOR, String RESET) {
         int ability;
-        System.out.printf("\nAbility list:\n");
+        System.out.printf("\nAbility list:\n");//print all ability list
         System.out.printf("0.%sSkip abilitiy%s\n",COLOR[3],RESET);
         System.out.printf("1.%sBoost %s(Dmg: Multiply 1.5x) %s\t\t      ||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][0], RESET);
         System.out.printf("2.%sParalyze enemy %s(Enemy turn will be skipped) %s||%s Limit: %d%s\n", COLOR[3], COLOR[1],RESET, COLOR[6], count[0][1], RESET);
@@ -330,11 +339,11 @@ public class EopMain {
         do {
             try{
                 do{
-                    ability = scanner.nextInt();
+                    ability = scanner.nextInt();//get ability input from user
                     System.out.println();
                     if (ability == 0)
-                        break;
-                    else if (ability < 1 || ability > 5) {
+                        break; //if user choose 0,this will break from this do loop and returning 0 to ability
+                    else if (ability < 0 || ability > 5) {
                         System.out.println(COLOR[1]+"Invalid selection."+RESET+" Pleagse choose a valid ability (1-5).");
                     }
                     for (int i = 0; i < abilityLimit[0].length; i++) {
@@ -342,28 +351,32 @@ public class EopMain {
                             System.out.println("You have reached the limit on this ability. Choose another one.");
                             ability = 0;  
                             break;
+                            /*after the input (check whther valid or not), this FOR function will check whether user have
+                             * limit or not to use the ability.Ff not enough,it will continue to loop
+                             */
                         }
                     }
                 }while(ability < 0 || ability > 5);
                 break;
             }
-            catch(InputMismatchException ex) {
+            catch(InputMismatchException ex) { //if user prompt wrong input,this method will cacth it and ask to enter valid input
                 System.out.println(COLOR[1]+"Invalid input."+RESET+"Please input a valid number.");
                 scanner.nextLine();
             }
 
-        } while (true);
+        } while (true);/*only break statement can escape from this loop.Which is at (if ability=0) and after the do while loop
+                        when user input is valid*/
 
         return ability;
     }
 
-    private static int getEnemyAbility(boolean[][] abilityLimit, int[][] count) {
+    private static int getEnemyAbility(boolean[][] abilityLimit, int[][] count) {//method to generate random ability for enemy
         int ability;
         do {
             ability = (int) (Math.random() * 5+1) + 0; 
             if(ability == 0)
-                break;
-            for (int i = 0; i < abilityLimit[1].length; i++) {
+                break;//if it generate 0,it will break from loop and return 0 to ability
+            for (int i = 0; i < abilityLimit[1].length; i++) {//this for function is to check the generated ability number limit is not 0
                 if (!abilityLimit[1][i] && (ability - 1) == i) {
                     ability=0;
                     break;
@@ -379,7 +392,6 @@ public class EopMain {
         String enemyAttackName = attacks[enemyAttack-1][0];
         if (!playerIsParalyzed) {
             System.out.println("|----------------------------------------------------------------");
-            //System.out.println("|" +COLOR[2] +playerName +RESET+ " used "+COLOR[1] + playerAttackName +RESET+ " and dealt "+COLOR[1] + playerDamage +RESET+" damage to "+COLOR[2] + enemyName + RESET);
             System.out.println("|" +COLOR[2] +playerName+ " used "+playerAttackName+ " and dealt "+ playerDamage +" damage to "+ enemyName + RESET);
         } 
         if (playerIsParalyzed) {
@@ -405,7 +417,7 @@ public class EopMain {
     }
 
     private static boolean ability2 (boolean isParalyzed, String attackerName, String targetName){
-        isParalyzed = true;
+        isParalyzed = true;//after isParalyzed is true, 
         System.out.println(attackerName+ " used Paralyze! " + targetName + " will be unable to attack next turn!");
         return isParalyzed;
     }
@@ -430,7 +442,7 @@ public class EopMain {
             else {
                 hp+= healingAmount;
             }
-            System.out.println(name + " used Heal! " + name + " recovers "+COLOR[2] + healingAmount + " HP!"+RESET);
+            System.out.println(name + " used Heal! " + name + " recovers " + healingAmount + " HP!"+RESET);
         } else {
             System.out.println(name+ " is already at full health!");
         }
