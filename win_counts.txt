@@ -1,2 +1,2 @@
-PLAYER || ENEMY
-0 wins   ||   3 wins
+PLAYER   ||   ENEMY
+0 wins   ||   2 wins

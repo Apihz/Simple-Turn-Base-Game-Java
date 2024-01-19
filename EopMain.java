@@ -481,7 +481,7 @@ public class EopMain {
 
      private static void updateWinCount(String filename, int playerWins, int enemyWins) {
         try (FileWriter fileWriter = new FileWriter(filename)) {
-            fileWriter.write("PLAYER || ENEMY\n");
+            fileWriter.write("PLAYER   ||   ENEMY\n");
             fileWriter.write(playerWins + " wins   ||   " + enemyWins + " wins");
         } catch (IOException e) {
             System.out.println("Error writing to the file: " + e.getMessage());
