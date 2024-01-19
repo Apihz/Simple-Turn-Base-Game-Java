@@ -1,5 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.InputMismatchException;
 
 public class EopMain {
@@ -19,38 +21,42 @@ public class EopMain {
          */
         String RESET ="\u001B[0m";
         char restart ='A';
+        int playerWins = 0;
+        int enemyWins = 0;
+
+        System.out.printf("-------WELCOME TO ZAHRUWI TURN-BASED GAME-------\n\n");
+        System.out.println("Choose text color [0 for BLACK] & [1 for WHITE]");
+        System.out.println("Notes:");
+        System.out.println("If your terminal background color is white,choose 0.");
+        System.out.println("If your terminal background color is black,choose 1.");
+        System.out.print("Choice: ");
+        do{
+            try{
+                int bg;
+                do{
+                    bg = scanner.nextInt();
+                    scanner.nextLine();
+                    if(bg == 1){
+                        System.out.print(RESET);
+                    }
+                    else if(bg == 0){
+                        System.out.print(COLOR[0]);
+                        RESET = COLOR[0];
+                    }
+                    if(bg < 0 || bg > 1)
+                        System.out.println("Please input a valid number");
+                }while(bg < 0 || bg > 1);
+                break;
+            }
+            catch (InputMismatchException ex) {
+                System.out.println("Please input a valid number");
+                scanner.nextLine();//Clear scanner buffer after wrong input
+            }
+        }while(true);
+
         do{
             restart = 'A';//reset restart to A so it dont keep looping after user choose Y
 
-            System.out.printf("-------WELCOME TO ZAHRUWI TURN-BASED GAME-------\n\n");
-            System.out.println("Choose text color [0 for BLACK] & [1 for WHITE]");
-            System.out.println("Notes:");
-            System.out.println("If your terminal background color is white,choose 0.");
-            System.out.println("If your terminal background color is black,choose 1.");
-            System.out.print("Choice: ");
-            do{
-                try{
-                    int bg;
-                    do{
-                        bg = scanner.nextInt();
-                        scanner.nextLine();
-                        if(bg == 0){
-                            System.out.print(RESET);
-                        }
-                        else if(bg == 1){
-                            System.out.print(COLOR[0]);
-                            RESET = COLOR[0];
-                        }
-                        if(bg < 0 || bg > 1)
-                            System.out.println("Please input a valid number");
-                    }while(bg < 0 || bg > 1);
-                    break;
-                }
-                catch (InputMismatchException ex) {
-                    System.out.println("Please input a valid number");
-                    scanner.nextLine();//Clear scanner buffer after wrong input
-                }
-            }while(true);
 
             /*method:
             main
@@ -78,10 +84,18 @@ public class EopMain {
                 {"Ultimate", "30", "50"}
             };
             
+            
             String[] enemyNameIndex = {"Pikachu", "Charizard", "Fanny", "Balmond", "Shiroi", "Kratos","Batman"};
             
-            playTurn(scanner, attacks, enemyNameIndex, RESET, COLOR); //call
-            System.out.println("\nDo you want to continue (Y/N): ");
+            int winner = playTurn(scanner, attacks, enemyNameIndex, RESET, COLOR); //call
+
+            if (winner == 1) {// winner counter 
+                playerWins++;
+            } else {
+                enemyWins++;
+            }
+
+            System.out.println("\nDo you want to continue (Y/N): ");// ask user if he to continue to play game or not
 
             do {
                 try {
@@ -102,14 +116,16 @@ public class EopMain {
             } while (restart != 'Y' && restart != 'N');
             
             if(restart == 'N')
-            break;
+                break;
 
         }while(restart != 'N');
+
+        updateWinCount("win_counts.txt", playerWins, enemyWins);//print winner count to text file
         
         scanner.close();
     }
 
-    private static void playTurn(Scanner scanner, String[][] attacks, String[] enemyNameIndex, String RESET, String COLOR[]) {
+    private static int playTurn(Scanner scanner, String[][] attacks, String[] enemyNameIndex, String RESET, String COLOR[]) {
         Random random = new Random();
         String playerName = getPlayerName(scanner); //call
         int playerHP = 100;
@@ -127,8 +143,6 @@ public class EopMain {
 
         int[][] limitCount = {{5,3,2,4,3},{5,3,2,4,3}};
         
-       
-
         while (playerHP > 0 && enemyHP > 0) {
 
             displayStatus(playerName, playerHP, playerEnergy, enemyName, enemyHP, enemyEnergy, randomIndex, RESET, COLOR); //call
@@ -189,7 +203,7 @@ public class EopMain {
                 System.out.print("|"+COLOR[1]);
                 switch (enemyAbility) {
                     case 1:
-                        enemyDamage = ability1(enemyDamage,enemyName);
+                        enemyDamage = ability1(enemyDamage,enemyName);//call each method ability for each cases
                         limitCount[1][0]-=1;
                         break;
                     case 2:
@@ -250,12 +264,19 @@ public class EopMain {
                 enemyEnergy += 7; // Gain mana after basic attack
             }
 
+            
+
             displayAttack(playerName, enemyName, attacks, playerAttack, playerDamage, enemyAttack, enemyDamage, playerIsParalyzed, enemyIsParalyzed, randomIndex, COLOR, RESET); //call
             
             playerIsParalyzed = false;//to reset the player and enemy paralyzed parameter to false after each loop is done
             enemyIsParalyzed = false;
         }
-        displayWinner(playerName, playerHP, enemyName, randomIndex, RESET, COLOR);
+
+        displayWinner(playerName, playerHP, enemyName, randomIndex, RESET, COLOR);// method to display winner
+        if(enemyHP < 0)
+                return 1;// player won
+        else
+            return 0;// enemy won
     }
 
 
@@ -456,6 +477,15 @@ public class EopMain {
             System.out.println("\n"+COLOR[1]+ enemyName + " is defeated. "+COLOR[2] + playerName + " is the winner!");
         }
         System.out.print(RESET);
+    }
+
+     private static void updateWinCount(String filename, int playerWins, int enemyWins) {
+        try (FileWriter fileWriter = new FileWriter(filename)) {
+            fileWriter.write("PLAYER || ENEMY\n");
+            fileWriter.write(playerWins + " wins   ||   " + enemyWins + " wins");
+        } catch (IOException e) {
+            System.out.println("Error writing to the file: " + e.getMessage());
+        }
     }
 }
 
